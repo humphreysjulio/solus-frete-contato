@@ -123,10 +123,7 @@
     }
     h1 span { color: var(--laranja); display: block; }
 
-    @media (max-width: 959px) {
-      .eyebrow { letter-spacing: .18em; font-size: .7rem; }
-      .nome small { font-size: .74rem; }
-    }
+    .eyebrow i { font-style: normal; }
 
     .subtitulo {
       color: var(--texto-suave);
@@ -328,6 +325,41 @@
     .tela-cheia svg { width: 18px; height: 18px; }
     @media (min-width: 960px) and (hover: hover) { .tela-cheia { display: grid; } }
 
+    /* ---------- celular: layout centralizado e compacto ---------- */
+    @media (max-width: 959px) {
+      .pagina { padding: 32px 16px 24px; }
+      .conteudo { gap: 28px; }
+
+      .conteudo > section:first-child { text-align: center; }
+      .logo { display: block; width: 76px; height: 76px; margin: 0 auto; }
+      .eyebrow { margin-top: 20px; font-size: .68rem; letter-spacing: .2em; }
+      .eyebrow span { display: block; }
+      .eyebrow i { display: none; }
+      h1 { margin: 10px 0 12px; }
+      .subtitulo { font-size: 1.15rem; }
+      .estrada { height: 54px; margin: 14px auto 0; max-width: 300px; }
+
+      .titulo-rota { justify-content: center; margin-bottom: 14px; }
+
+      /* sem a linha da rota: cartões na largura toda, número no canto do cartão */
+      .rota { padding-left: 0; gap: 12px; }
+      .rota::before { display: none; }
+      .marcador {
+        left: auto; right: 12px; top: 12px; margin: 0;
+        width: 26px; height: 26px;
+        font-size: .65rem;
+        z-index: 1;
+      }
+      .card { padding: 16px; border-radius: 18px; }
+      .topo { gap: 12px; margin-bottom: 14px; padding-right: 30px; }
+      .avatar { width: 46px; height: 46px; border-radius: 14px; font-size: 1rem; }
+      .nome { font-size: 1rem; }
+      .nome small { font-size: .76rem; }
+      .botoes a, .botoes button { padding: 13px 10px; }
+
+      footer { margin-top: 24px; }
+    }
+
     /* ---------- animações ---------- */
     @keyframes flutuar { 50% { transform: translateY(-6px) rotate(-2deg); } }
     @keyframes pista { to { background-position: -40px 0; } }
@@ -360,7 +392,7 @@
     <div class="conteudo" id="conteudo">
       <section>
         <img class="logo surgir" src="logo.png" alt="Logo Solus-Frete">
-        <p class="eyebrow surgir">Trabalho de Graduação · Sistemas de Informação</p>
+        <p class="eyebrow surgir"><span>Trabalho de Graduação</span><i> · </i><span>Sistemas de Informação</span></p>
         <h1 class="surgir">Solus <span>Frete</span></h1>
         <p class="subtitulo surgir">A ponte entre quem <b>precisa</b><br>e quem <b>faz</b> o <strong>frete!</strong></p>
 
