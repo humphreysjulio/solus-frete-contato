@@ -39,8 +39,8 @@
     }
 
     /* ---------- fundo ---------- */
-    /* fundo parado ao rolar; no iPhone, as barras fixas (.barra-topo e .barra-base) cobrem as áreas do sistema */
-    .fundo { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    /* absolute (não fixed): no iPhone, elementos fixos não passam por baixo da barra de status e da barra de endereço */
+    .fundo { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
     .circulo-laranja {
       position: absolute;
       width: 46vmax; height: 46vmax;
