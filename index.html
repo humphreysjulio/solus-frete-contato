@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b2150">
+  <title>Solus-Frete · Fale com a gente</title>
+  <link rel="icon" href="logo.png">
+  <style>
+    :root {
+      --azul: #0b2150;
+      --azul-card: rgba(19, 46, 98, .88);
+      --linha: rgba(255, 255, 255, .1);
+      --laranja: #f0961e;
+      --laranja-2: #ffb547;
+      --texto: #ffffff;
+      --texto-suave: #b9c8e6;
+      --verde: #25d366;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* nunca rolar para os lados */
+    html, body { overflow-x: hidden; max-width: 100%; }
+    .pagina { overflow-x: clip; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(120% 90% at 0% 100%, #15377a 0%, transparent 55%), var(--azul);
+      color: var(--texto);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- fundo ---------- */
+    .fundo { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .circulo-laranja {
+      position: absolute;
+      width: 46vmax; height: 46vmax;
+      right: -14vmax; top: -16vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 65%, var(--laranja-2), var(--laranja) 60%);
+      box-shadow: 0 0 120px rgba(240, 150, 30, .35);
+    }
+    .circulo-azul {
+      position: absolute;
+      width: 60vmax; height: 60vmax;
+      left: -26vmax; bottom: -34vmax;
+      border-radius: 50%;
+      background: #15346f;
+    }
+    .pontos {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mask-image: linear-gradient(to bottom, black, transparent 80%);
+      -webkit-mask-image: linear-gradient(to bottom, black, transparent 80%);
+    }
+
+    /* ---------- layout (celular primeiro) ---------- */
+    .pagina { padding: 40px 16px 32px; }
+    .conteudo {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    footer {
+      text-align: center;
+      color: var(--texto-suave);
+      font-size: .78rem;
+      opacity: .8;
+      margin-top: 32px;
+    }
+
+    /* PC: tudo cabe na tela, sem rolagem */
+    @media (min-width: 960px) {
+      html, body { height: 100%; overflow: hidden; }
+      .pagina {
+        height: 100vh; height: 100dvh;
+        display: flex; align-items: center; justify-content: center;
+        padding: 24px 40px 44px;
+      }
+      .conteudo {
+        width: 100%;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+        align-items: center;
+        gap: 72px;
+      }
+      footer { position: fixed; left: 0; right: 0; bottom: 16px; margin: 0; }
+    }
+
+    @media (max-width: 959px) {
+      .circulo-laranja { width: 260px; height: 260px; right: -110px; top: -120px; }
+    }
+
+    /* ---------- lado esquerdo ---------- */
+    .logo {
+      width: 84px; height: 84px;
+      border-radius: 20px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .4), 0 0 0 1px rgba(255, 255, 255, .08);
+      animation: flutuar 5s ease-in-out infinite;
+    }
+    @media (min-width: 960px) { .logo { width: 104px; height: 104px; border-radius: 24px; } }
+
+    .eyebrow {
+      margin-top: 28px;
+      color: var(--laranja);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      line-height: 1.6;
+    }
+
+    h1 {
+      font-size: clamp(3.4rem, 11vw, 7rem);
+      line-height: .95;
+      letter-spacing: -.03em;
+      font-weight: 700;
+      margin: 14px 0 18px;
+    }
+    h1 span { color: var(--laranja); display: block; }
+
+    @media (max-width: 959px) {
+      .eyebrow { letter-spacing: .18em; font-size: .7rem; }
+      .nome small { font-size: .74rem; }
+    }
+
+    .subtitulo {
+      color: var(--texto-suave);
+      font-size: clamp(1.25rem, 2.8vw, 1.9rem);
+      line-height: 1.35;
+    }
+    .subtitulo b { color: #fff; }
+    .subtitulo strong {
+      position: relative;
+      display: inline-block;
+      color: var(--laranja);
+      font-size: 1.15em;
+    }
+    /* traço laranja que se desenha embaixo de "frete!" */
+    .subtitulo strong::after {
+      content: "";
+      position: absolute; left: 0; right: 0; bottom: -4px;
+      height: 4px; border-radius: 4px;
+      background: var(--laranja);
+      transform: scaleX(0); transform-origin: left;
+      animation: sublinhar .6s 1s cubic-bezier(.2, .8, .2, 1) forwards;
+    }
+    @keyframes sublinhar { to { transform: scaleX(1); } }
+
+    /* estrada animada com o caminhão */
+    .estrada { position: relative; height: 70px; margin-top: 36px; max-width: 460px; }
+    .estrada .pista {
+      position: absolute; left: 0; right: 0; bottom: 10px;
+      height: 4px; border-radius: 4px;
+      background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .35) 0 22px, transparent 22px 40px);
+      background-size: 40px 4px;
+      animation: pista .7s linear infinite;
+      mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+    }
+    .estrada .caminhao {
+      position: absolute; bottom: 14px; left: 50%;
+      width: 96px; margin-left: -48px;
+      animation: chacoalhar .35s ease-in-out infinite alternate;
+    }
+    .estrada .velocidade line { animation: vento .6s linear infinite; }
+    .estrada .velocidade line:nth-child(2) { animation-delay: .2s; }
+    .estrada .velocidade line:nth-child(3) { animation-delay: .4s; }
+
+    /* ---------- lado direito: rota de contatos ---------- */
+    .titulo-rota {
+      display: flex; align-items: center; gap: 10px;
+      font-size: .75rem; font-weight: 700;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--texto-suave);
+      margin-bottom: 18px;
+    }
+    .titulo-rota::before {
+      content: ""; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--laranja);
+      box-shadow: 0 0 0 0 rgba(240, 150, 30, .7);
+      animation: pulso 2s infinite;
+    }
+
+    .rota { position: relative; list-style: none; padding-left: 40px; display: grid; gap: 16px; }
+    .rota::before {
+      content: "";
+      position: absolute; left: 13px; top: 28px; bottom: 28px;
+      width: 2px;
+      background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, .35) 0 6px, transparent 6px 12px);
+      background-size: 2px 12px;
+      animation: rota-desce 1s linear infinite;
+    }
+
+    .parada { position: relative; opacity: 0; transform: translateY(18px); animation: entrar .7s cubic-bezier(.2, .8, .2, 1) forwards; }
+    .parada:nth-child(1) { animation-delay: .15s; }
+    .parada:nth-child(2) { animation-delay: .3s; }
+    .parada:nth-child(3) { animation-delay: .45s; }
+
+    .marcador {
+      position: absolute; left: -40px; top: 50%;
+      width: 28px; height: 28px; margin-top: -14px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      background: var(--azul);
+      border: 2px solid var(--laranja);
+      color: var(--laranja);
+      font-size: .7rem; font-weight: 700;
+      transition: background .25s, color .25s, transform .25s;
+    }
+
+    .card {
+      position: relative;
+      background: var(--azul-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--linha);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .28);
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+    }
+    .card::after {
+      /* faixa laranja que aparece no hover */
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      border-radius: 20px 0 0 20px;
+      background: var(--laranja);
+      transform: scaleY(0); transition: transform .3s;
+    }
+    /* efeitos de passar o mouse só em quem tem mouse (no celular o toque empurrava o cartão para o lado) */
+    @media (hover: hover) {
+      .parada:hover .card {
+        transform: translateX(4px);
+        border-color: rgba(240, 150, 30, .45);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, .35);
+      }
+      .parada:hover .card::after { transform: scaleY(1); }
+      .parada:hover .marcador { background: var(--laranja); color: var(--azul); transform: scale(1.12); }
+    }
+
+    .topo { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .avatar {
+      width: 52px; height: 52px; flex-shrink: 0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--laranja-2), var(--laranja));
+      color: var(--azul);
+      font-weight: 700; font-size: 1.1rem;
+      display: grid; place-items: center;
+      box-shadow: 0 6px 16px rgba(240, 150, 30, .3);
+    }
+    .nome { font-size: 1.08rem; font-weight: 700; line-height: 1.25; min-width: 0; }
+    .nome small { display: block; color: var(--texto-suave); font-weight: 400; font-size: .82rem; margin-top: 3px; overflow-wrap: anywhere; }
+
+    .botoes { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .botoes a, .botoes button {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 10px;
+      border-radius: 999px;
+      font: inherit; font-size: .92rem; font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .15s, filter .15s, box-shadow .2s;
+    }
+    .botoes a:hover, .botoes button:hover { filter: brightness(1.08); transform: translateY(-2px); }
+    .botoes a:active, .botoes button:active { transform: scale(.97); }
+    .botoes .whats { background: var(--verde); color: #fff; box-shadow: 0 6px 16px rgba(37, 211, 102, .25); }
+    .botoes .email { background: transparent; color: #fff; border: 1.5px solid rgba(255, 255, 255, .25); }
+    .botoes .email:hover { border-color: var(--laranja); color: var(--laranja); }
+    .botoes svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* menu de e-mail (PC): abre acima do botão */
+    .menu-email {
+      position: absolute; right: 0; bottom: calc(100% + 10px); z-index: 10;
+      width: min(240px, 100%);
+      padding: 6px;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, .4);
+      display: none;
+    }
+    .menu-email.aberto { display: block; animation: entrar .2s ease-out; }
+    .menu-email a, .menu-email button {
+      display: flex; align-items: center; justify-content: flex-start; gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border: 0; border-radius: 10px;
+      background: none;
+      color: var(--azul);
+      font: inherit; font-size: .9rem; font-weight: 700;
+      text-align: left; text-decoration: none;
+      cursor: pointer;
+    }
+    .menu-email a:hover, .menu-email button:hover { background: #fdf0de; color: #b86a00; transform: none; filter: none; }
+    .menu-email .bolinha { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    .aviso {
+      position: fixed; left: 50%; bottom: 48px; z-index: 20;
+      transform: translate(-50%, 20px);
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: var(--laranja); color: var(--azul);
+      font-weight: 700; font-size: .9rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s, transform .25s;
+    }
+    .aviso.visivel { opacity: 1; transform: translate(-50%, 0); }
+
+    /* botão de tela cheia (só no PC) */
+    .tela-cheia {
+      display: none;
+      position: fixed; top: 16px; right: 16px; z-index: 5;
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, .25);
+      background: rgba(11, 33, 80, .55);
+      color: #fff;
+      cursor: pointer;
+      place-items: center;
+      backdrop-filter: blur(8px);
+      transition: background .2s, transform .15s;
+    }
+    .tela-cheia:hover { background: var(--azul); transform: scale(1.06); }
+    .tela-cheia svg { width: 18px; height: 18px; }
+    @media (min-width: 960px) and (hover: hover) { .tela-cheia { display: grid; } }
+
+    /* ---------- animações ---------- */
+    @keyframes flutuar { 50% { transform: translateY(-6px) rotate(-2deg); } }
+    @keyframes pista { to { background-position: -40px 0; } }
+    @keyframes chacoalhar { to { transform: translateY(-2px); } }
+    @keyframes vento { from { transform: translateX(6px); opacity: 1; } to { transform: translateX(-10px); opacity: 0; } }
+    @keyframes rota-desce { to { background-position: 0 12px; } }
+    @keyframes entrar { to { opacity: 1; transform: none; } }
+    @keyframes pulso {
+      70% { box-shadow: 0 0 0 10px rgba(240, 150, 30, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(240, 150, 30, 0); }
+    }
+    .surgir { opacity: 0; transform: translateY(14px); animation: entrar .7s cubic-bezier(.2, .8, .2, 1) forwards; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .parada, .surgir { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="fundo" aria-hidden="true">
+    <div class="circulo-laranja"></div>
+    <div class="circulo-azul"></div>
+    <div class="pontos"></div>
+  </div>
+
+  <button class="tela-cheia" id="telaCheia" type="button" title="Tela cheia" aria-label="Tela cheia"></button>
+
+  <div class="pagina">
+    <div class="conteudo" id="conteudo">
+      <section>
+        <img class="logo surgir" src="logo.png" alt="Logo Solus-Frete">
+        <p class="eyebrow surgir">Trabalho de Graduação · Sistemas de Informação</p>
+        <h1 class="surgir">Solus <span>Frete</span></h1>
+        <p class="subtitulo surgir">A ponte entre quem <b>precisa</b><br>e quem <b>faz</b> o <strong>frete!</strong></p>
+
+        <div class="estrada surgir" aria-hidden="true">
+          <div class="pista"></div>
+          <svg class="caminhao" viewBox="0 0 96 48">
+            <g class="velocidade" stroke="#f0961e" stroke-width="3" stroke-linecap="round">
+              <line x1="2" y1="14" x2="18" y2="14"/>
+              <line x1="6" y1="22" x2="20" y2="22"/>
+              <line x1="0" y1="30" x2="16" y2="30"/>
+            </g>
+            <rect x="24" y="6" width="42" height="30" rx="4" fill="#f0961e"/>
+            <path d="M68 14h12l10 11v11H68z" fill="#f0961e"/>
+            <path d="M72 18h7l6 7h-13z" fill="#0b2150"/>
+            <circle cx="38" cy="38" r="7" fill="#0b2150" stroke="#f0961e" stroke-width="3"/>
+            <circle cx="78" cy="38" r="7" fill="#0b2150" stroke="#f0961e" stroke-width="3"/>
+          </svg>
+        </div>
+      </section>
+
+      <section>
+        <p class="titulo-rota">Fale com a gente</p>
+        <ol class="rota" id="lista"></ol>
+      </section>
+    </div>
+
+    <footer>© 2026 Solus-Frete</footer>
+  </div>
+
+  <div class="aviso" id="aviso" role="status"></div>
+
+  <script>
+    // ========= EDITE AQUI =========
+    // whatsapp: só números, com 55 + DDD
+    const INTEGRANTES = [
+      {
+        nome: "Julio César Humphreys Reis",
+        whatsapp: "5511964605692",
+        email: "julio.reis@aluno.impacta.edu.br",
+      },
+      {
+        nome: "Danilo Matheus Lopes de Oliveira",
+        whatsapp: "5511940135904",
+        email: "danilo.lopes@aluno.impacta.edu.br",
+      },
+      {
+        nome: "Debora Vieira Cassoli",
+        whatsapp: "5511953370238",
+        email: "debora.cassoli@aluno.impacta.edu.br",
+      },
+    ];
+    // ==============================
+
+    const icones = {
+      whats: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.3-.5 0-1 .3-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>',
+      email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>',
+      expandir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+      recolher: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>',
+    };
+
+    // iniciais do primeiro e do último nome
+    const iniciais = nome => {
+      const partes = nome.split(" ").filter(Boolean);
+      return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+    };
+
+    const lista = document.getElementById("lista");
+    INTEGRANTES.forEach((p, i) => {
+      const item = document.createElement("li");
+      item.className = "parada";
+      item.innerHTML = `
+        <span class="marcador">${String(i + 1).padStart(2, "0")}</span>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar">${iniciais(p.nome)}</div>
+            <div class="nome">${p.nome}<small>${p.email}</small></div>
+          </div>
+          <div class="botoes">
+            <a class="whats" href="https://wa.me/${p.whatsapp}" target="_blank" rel="noopener">${icones.whats} WhatsApp</a>
+            <button class="email" type="button">${icones.email} E-mail</button>
+            <div class="menu-email">
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${p.email}" target="_blank" rel="noopener"><span class="bolinha" style="background:#ea4335"></span>Abrir no Gmail</a>
+              <a href="https://outlook.office.com/mail/deeplink/compose?to=${p.email}" target="_blank" rel="noopener"><span class="bolinha" style="background:#0a64d6"></span>Abrir no Outlook</a>
+              <button type="button" class="copiar"><span class="bolinha" style="background:var(--laranja)"></span>Copiar endereço</button>
+            </div>
+          </div>
+        </div>`;
+
+      const menu = item.querySelector(".menu-email");
+      item.querySelector(".email").addEventListener("click", e => {
+        e.stopPropagation();
+        // celular: abre o app de e-mail; PC: mostra o menu
+        if (matchMedia("(pointer: coarse)").matches) {
+          location.href = `mailto:${p.email}`;
+          return;
+        }
+        const estavaAberto = menu.classList.contains("aberto");
+        fecharMenus();
+        if (!estavaAberto) menu.classList.add("aberto");
+      });
+      item.querySelector(".copiar").addEventListener("click", () => {
+        navigator.clipboard.writeText(p.email)
+          .then(() => mostrarAviso("E-mail copiado!"))
+          .catch(() => mostrarAviso(p.email));
+        fecharMenus();
+      });
+      menu.querySelectorAll("a").forEach(a => a.addEventListener("click", fecharMenus));
+
+      lista.appendChild(item);
+    });
+
+    function fecharMenus() {
+      document.querySelectorAll(".menu-email.aberto").forEach(m => m.classList.remove("aberto"));
+    }
+    document.addEventListener("click", e => { if (!e.target.closest(".menu-email")) fecharMenus(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") fecharMenus(); });
+
+    const aviso = document.getElementById("aviso");
+    let timerAviso;
+    function mostrarAviso(texto) {
+      aviso.textContent = texto;
+      aviso.classList.add("visivel");
+      clearTimeout(timerAviso);
+      timerAviso = setTimeout(() => aviso.classList.remove("visivel"), 2200);
+    }
+
+    // entrada escalonada do lado esquerdo
+    document.querySelectorAll(".surgir").forEach((el, i) => el.style.animationDelay = `${i * .08}s`);
+
+    // No PC, encolhe o conteúdo quando a tela é baixa, para nunca precisar rolar
+    const conteudo = document.getElementById("conteudo");
+    const pc = matchMedia("(min-width: 960px)");
+    function ajustarTela() {
+      conteudo.style.zoom = 1;
+      if (!pc.matches) return;
+      const espaco = innerHeight - 70;
+      conteudo.style.zoom = Math.min(1, espaco / conteudo.offsetHeight);
+    }
+    addEventListener("resize", ajustarTela);
+    ajustarTela();
+
+    // botão de tela cheia
+    const botaoTela = document.getElementById("telaCheia");
+    const atualizarBotao = () => botaoTela.innerHTML = document.fullscreenElement ? icones.recolher : icones.expandir;
+    botaoTela.addEventListener("click", () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen?.();
+    });
+    document.addEventListener("fullscreenchange", atualizarBotao);
+    atualizarBotao();
+  </script>
+</body>
+</html>
