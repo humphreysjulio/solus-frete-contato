@@ -41,6 +41,21 @@
     /* ---------- fundo ---------- */
     /* absolute (não fixed): no iPhone, elementos fixos não passam por baixo da barra de status e da barra de endereço */
     .fundo { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .circulo-laranja {
+      position: absolute;
+      width: 46vmax; height: 46vmax;
+      right: -14vmax; top: -16vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 65%, var(--laranja-2), var(--laranja) 60%);
+      box-shadow: 0 0 120px rgba(240, 150, 30, .35);
+    }
+    .circulo-azul {
+      position: absolute;
+      width: 60vmax; height: 60vmax;
+      left: -26vmax; bottom: -34vmax;
+      border-radius: 50%;
+      background: #15346f;
+    }
     .pontos {
       position: absolute; inset: 0;
       background-image: radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px);
@@ -81,6 +96,10 @@
         gap: 72px;
       }
       footer { position: fixed; left: 0; right: 0; bottom: 16px; margin: 0; }
+    }
+
+    @media (max-width: 959px) {
+      .circulo-laranja { width: 260px; height: 260px; right: -110px; top: -120px; }
     }
 
     /* ---------- lado esquerdo ---------- */
@@ -371,6 +390,8 @@
 </head>
 <body>
   <div class="fundo" aria-hidden="true">
+    <div class="circulo-laranja"></div>
+    <div class="circulo-azul"></div>
     <div class="pontos"></div>
   </div>
 
