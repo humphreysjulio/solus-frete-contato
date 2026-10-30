@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0b2150">
   <title>Solus-Frete · Fale com a gente</title>
   <link rel="icon" href="logo.png">
@@ -24,7 +24,13 @@
     html, body { overflow-x: hidden; max-width: 100%; }
     .pagina { overflow-x: clip; }
 
+    html { background: var(--azul); }
+
     body {
+      position: relative;
+      isolation: isolate; /* mantém o .fundo (z-index -1) na frente da cor do body */
+      min-height: 100vh;
+      min-height: 100lvh;
       font-family: Arial, Helvetica, sans-serif;
       background: radial-gradient(120% 90% at 0% 100%, #15377a 0%, transparent 55%), var(--azul);
       color: var(--texto);
@@ -33,7 +39,8 @@
     }
 
     /* ---------- fundo ---------- */
-    .fundo { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    /* absolute (não fixed): no iPhone, elementos fixos não passam por baixo da barra de status e da barra de endereço */
+    .fundo { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
     .circulo-laranja {
       position: absolute;
       width: 46vmax; height: 46vmax;
@@ -327,7 +334,9 @@
 
     /* ---------- celular: layout centralizado e compacto ---------- */
     @media (max-width: 959px) {
-      .pagina { padding: 32px 16px 24px; }
+      .pagina {
+        padding: calc(32px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+      }
       .conteudo { gap: 28px; }
 
       .conteudo > section:first-child { text-align: center; }
